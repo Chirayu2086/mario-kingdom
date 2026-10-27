@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#78d7ff">
+<meta name="description" content="A colorful, browser-based platform adventure. Run, jump, collect coins and reach the castle.">
+<title>Mario Kingdom — Pixel Platform Adventure</title>
+<style>
+:root{color-scheme:dark;--ink:#18233d;--cream:#fff5d8;--red:#f04452;--gold:#ffd54a;--sky:#75d7ff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;background:#11182b;color:#fff}body{display:grid;place-items:center;padding:20px;overflow-x:hidden}
+.shell{width:min(1100px,100%)}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}.brand{display:flex;align-items:center;gap:12px}.mark{width:48px;height:48px;border:3px solid #fff;border-radius:15px;background:var(--red);display:grid;place-items:center;font-size:25px;box-shadow:0 5px 0 #a92b3b}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.2em;color:#9eb8d9;text-transform:uppercase}.brand h1{font-size:clamp(20px,4vw,29px);margin:2px 0 0;letter-spacing:-.04em}.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}button{font:inherit;font-weight:800;border:0;cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .12s}button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px)}.pill{border-radius:12px;padding:10px 14px;color:#fff;background:#273653;border:1px solid #405273}.game-card{overflow:hidden;border:3px solid #fff;border-radius:22px;background:#7bd8ff;box-shadow:0 14px 0 #080d19,0 25px 65px #0006}.hud{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 16px;background:#17233c;border-bottom:3px solid #fff}.stat{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:900;letter-spacing:.1em;color:#a8c0e2;text-transform:uppercase}.stat strong{font-size:18px;color:white;letter-spacing:0;font-variant-numeric:tabular-nums}.hearts{color:#ff6674;letter-spacing:2px}.stage{position:relative;line-height:0;background:var(--sky)}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:pixelated;outline:none}.overlay{position:absolute;inset:0;display:grid;place-items:center;background:#12213c99;backdrop-filter:blur(4px);padding:20px}.panel{max-width:430px;text-align:center;line-height:1.4;background:#fff8df;color:var(--ink);border:4px solid #fff;border-radius:24px;padding:clamp(20px,4vw,34px);box-shadow:0 8px 0 #c5a66a}.panel .emoji{font-size:48px;line-height:1}.panel h2{font-size:clamp(25px,5vw,39px);letter-spacing:-.05em;margin:12px 0 6px}.panel p{margin:0 0 20px;color:#52617c}.primary{background:var(--red);color:#fff;padding:13px 22px;border-radius:13px;box-shadow:0 5px 0 #ad2938}.hint{text-align:center;color:#a8b9d5;font-size:12px;margin:15px 0 0}.hint b{color:#fff}.controls{display:none;justify-content:space-between;align-items:center;gap:18px;padding:13px 15px;background:#17233c}.control-group{display:flex;gap:10px}.control{width:56px;height:50px;border-radius:15px;background:#304361;color:#fff;border:1px solid #53698d;font-size:21px;box-shadow:0 4px 0 #0b1323;user-select:none}.control.jump{width:88px;background:var(--red);font-size:13px}.control:active{box-shadow:0 1px 0 #0b1323;transform:translateY(3px)}.footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:18px;color:#8598b7;font-size:11px}.footer a{color:#c6d6f2;text-decoration:none}.footer a:hover{text-decoration:underline}
+@media(max-width:650px){body{padding:12px 8px}.top{align-items:flex-start}.brand{gap:8px}.mark{width:40px;height:40px}.actions{gap:5px}.pill{padding:9px 10px;font-size:12px}.hud{padding:9px 10px}.stat{font-size:10px;gap:5px}.stat strong{font-size:15px}.controls{display:flex}.hint{line-height:1.7}.game-card{border-radius:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top"><div class="brand"><div class="mark" aria-hidden="true">🍄</div><div><div class="eyebrow">Pixel platform adventure</div><h1>Mario Kingdom</h1></div></div><div class="actions"><button class="pill" id="soundBtn" aria-label="Toggle sound">♫ Sound on</button><button class="pill" id="pauseBtn">Ⅱ Pause</button></div></header>
+<section class="game-card" aria-label="Game">
+<div class="hud"><div class="stat">⭐ Score <strong id="score">000000</strong></div><div class="stat">🪙 Coins <strong id="coins">00</strong></div><div class="stat">♥ Lives <strong class="hearts" id="lives">♥ ♥ ♥</strong></div><div class="stat">🏁 World <strong>1-1</strong></div></div>
+<div class="stage"><canvas id="game" width="960" height="540" tabindex="0" aria-label="Platform game. Use arrow keys or A and D to move, Space to jump.">Your browser does not support canvas.</canvas>
+<div class="overlay" id="overlay"><div class="panel"><div class="emoji">🍄 ⭐ 🏰</div><h2 id="overlayTitle">Ready, player one?</h2><p id="overlayText">Run through the kingdom, collect coins, hop over Goombas and reach the castle.</p><button class="primary" id="startBtn">Start adventure →</button></div></div>
+</div>
+<div class="controls" aria-label="Touch controls"><div class="control-group"><button class="control" data-hold="left" aria-label="Move left">←</button><button class="control" data-hold="right" aria-label="Move right">→</button></div><button class="control jump" data-hold="jump">JUMP ⤴</button></div>
+</section>
+<div class="hint">MOVE <b>A / D</b> or <b>← →</b> &nbsp; · &nbsp; JUMP <b>SPACE / W / ↑</b> &nbsp; · &nbsp; PAUSE <b>P</b> &nbsp; · &nbsp; MUTE <b>M</b></div>
+<footer class="footer"><span>Built for the joy of jumping. No downloads, no external libraries.</span><span><a href="https://github.com/Chirayu2086/mario-kingdom">Open source project ↗</a></span></footer>
+</main>
+<script>
+(()=>{
+'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+const W=960,H=540,worldW=3300,groundY=452;
+let raf=0,last=0,started=false,paused=false,over=false,won=false,sound=true,audio=null;
+let score=0,coins=0,lives=3,camera=0,elapsed=0,shake=0;
+const keys={left:false,right:false,jump:false};
+const player={x:72,y:300,w:31,h:43,vx:0,vy:0,grounded:false,face:1,inv:0,frame:0};
+let platforms=[],coinItems=[],enemies=[],particles=[],checkpoints=[];
+const rand=(a,b)=>a+Math.random()*(b-a);
+function resetWorld(){
+platforms=[{x:0,y:groundY,w:worldW,h:100,type:'ground'}];
+const ledges=[[250,370,115],[430,320,120],[640,370,110],[850,335,135],[1090,375,125],[1290,315,120],[1490,365,130],[1720,325,140],[1940,375,130],[2170,320,120],[2370,365,140],[2600,310,140],[2820,365,125],[3030,330,100]];
+ledges.forEach(([x,y,w])=>platforms.push({x,y,w,h:18,type:'brick'}));
+[360,560,770,1000,1190,1410,1630,1850,2070,2290,2500,2730,2940].forEach((x,i)=>platforms.push({x,y:groundY-54,w:48,h:54,type:'pipe'}));
+coinItems=[];
+for(let i=0;i<48;i++){const x=175+i*64;const y= i%4===0?300:(i%3===0?335:groundY-83);coinItems.push({x,y,got:false,phase:rand(0,6.28)});}
+for(const [x,y] of [[270,326],[540,276],[760,326],[1010,292],[1220,326],[1530,326],[1810,286],[2100,281],[2440,326],[2750,271],[2970,326]])coinItems.push({x,y,got:false,phase:rand(0,6.28)});
+enemies=[420,710,940,1160,1450,1680,2020,2250,2570,2860].map((x,i)=>({x,y:groundY-27,w:30,h:27,vx:i%2?-.8:.8,alive:true,home:x}));
+particles=[];checkpoints=[1100,2050,2750];
+}
+function resetGame(){score=0;coins=0;lives=3;camera=0;elapsed=0;over=false;won=false;player.x=72;player.y=300;player.vx=0;player.vy=0;player.inv=0;resetWorld();hud();}
+function hud(){$('score').textContent=String(score).padStart(6,'0');$('coins').textContent=String(coins).padStart(2,'0');$('lives').textContent=Array.from({length:3},(_,i)=>i<lives?'♥':'♡').join(' ');}
+function beep(freq=650,dur=.08,type='square'){if(!sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.045,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+dur);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+dur)}catch{}}
+function burst(x,y,color,n=8){for(let i=0;i<n;i++)particles.push({x,y,vx:rand(-2.5,2.5),vy:rand(-4,-.5),life:rand(20,36),color,size:rand(3,7)});}
+function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
+function rounded(x,y,w,h,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
+function drawCloud(x,y,s=1){ctx.fillStyle='#ffffffd9';ctx.beginPath();ctx.ellipse(x,y,27*s,14*s,0,0,Math.PI*2);ctx.ellipse(x+22*s,y-11*s,20*s,18*s,0,0,Math.PI*2);ctx.ellipse(x+42*s,y,26*s,13*s,0,0,Math.PI*2);ctx.fill();}
+function drawHill(x,y,s,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x-s,y);ctx.quadraticCurveTo(x,y-s*1.7,x+s,y);ctx.closePath();ctx.fill();ctx.fillStyle='#ffffff88';ctx.beginPath();ctx.moveTo(x-s*.23,y-s*.6);ctx.lineTo(x,y-s*.94);ctx.lineTo(x+s*.25,y-s*.6);ctx.lineTo(x+s*.03,y-s*.68);ctx.lineTo(x-s*.05,y-s*.68);ctx.closePath();ctx.fill();}
+function background(){
+const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#65c9ff');sky.addColorStop(1,'#d0f5ff');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ctx.fillStyle='#fff3a6';ctx.beginPath();ctx.arc(795,88,36,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff9d9';ctx.beginPath();ctx.arc(784,77,29,0,Math.PI*2);ctx.fill();
+for(let i=0;i<7;i++){const x=((i*190-camera*.2)%(W+120)+W+120)%(W+120)-40;drawCloud(x,95+(i%3)*45,.7+(i%2)*.25);}
+for(let i=0;i<8;i++){const x=((i*175-camera*.35)%(W+180)+W+180)%(W+180)-50;drawHill(x,groundY+10,68,'#88d9a4');}
+for(let i=0;i<9;i++){const x=((i*145-camera*.55)%(W+130)+W+130)%(W+130)-30;drawHill(x,groundY+8,48,'#4fbd8d');}
+}
+function drawGround(){
+for(const p of platforms){const x=p.x-camera;if(x+p.w< -10||x>W+10)continue;
+if(p.type==='ground'){rect(x,p.y,p.w,p.h,'#b66c3b');rect(x,p.y,p.w,14,'#58c95c');rect(x,p.y+12,p.w,5,'#2e9d50');for(let bx=Math.floor(p.x/48)*48;bx<p.x+p.w;bx+=48){rect(bx-camera,p.y+27,2,20,'#99552f');rect(bx-camera+14,p.y+54,20,2,'#99552f');}}
+else if(p.type==='brick'){rect(x,p.y,p.w,p.h,'#df8c4c');rect(x,p.y,p.w,4,'#ffd18a');rect(x,p.y+p.h-4,p.w,4,'#a6533c');for(let bx=0;bx<p.w;bx+=30){rect(x+bx,p.y+5,2,p.h-10,'#b96542');}rect(x+14,p.y+8,14,2,'#f8bc76');}
+else{rect(x+2,p.y+7,p.w-4,p.h,'#198c4d');rect(x-2,p.y,p.w+4,14,'#32bd65');rect(x+2,p.y+3,p.w-4,4,'#77e87b');rect(x+7,p.y+18,4,p.h-18,'#36a65b');rect(x+p.w-10,p.y+18,4,p.h-18,'#36a65b');}}
+}
+function drawCoin(c){if(c.got)return;const bob=Math.sin(elapsed*.08+c.phase)*4,x=c.x-camera,y=c.y+bob;if(x< -20||x>W+20)return;const squash=.35+Math.abs(Math.sin(elapsed*.09+c.phase))*.65;ctx.save();ctx.translate(x,y);ctx.scale(squash,1);ctx.fillStyle='#d98517';ctx.beginPath();ctx.ellipse(0,0,9,13,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffd947';ctx.beginPath();ctx.ellipse(-1,-1,6,10,0,0,Math.PI*2);ctx.fill();rect(-2,-6,3,11,'#fff0a2');ctx.restore();}
+function drawEnemy(e){if(!e.alive)return;const x=e.x-camera,y=e.y;ctx.fillStyle='#713b31';ctx.beginPath();ctx.ellipse(x+15,y+15,15,13,0,Math.PI,Math.PI*2);ctx.fill();rounded(x,y+12,30,14,7,'#a95a3e');rect(x+6,y+12,6,8,'#fff');rect(x+19,y+12,6,8,'#fff');rect(x+8,y+14,3,5,'#17233c');rect(x+21,y+14,3,5,'#17233c');rect(x+5,y+24,8,3,'#542d2a');rect(x+19,y+24,8,3,'#542d2a');}
+function drawPlayer(){if(player.inv>0&&Math.floor(elapsed/4)%2===0)return;const x=player.x-camera,y=player.y,flip=player.face<0;ctx.save();ctx.translate(x+player.w/2,y+player.h/2);if(flip)ctx.scale(-1,1);ctx.translate(-player.w/2,-player.h/2);
+rect(6,0,19,7,'#d92f3d');rect(3,5,25,6,'#f04452');rect(7,10,17,12,'#ffd1a3');rect(5,8,7,5,'#d92f3d');rect(20,8,8,5,'#d92f3d');rect(21,13,4,6,'#202d48');rect(14,18,12,4,'#b96b48');rect(6,23,20,12,'#2977d8');rect(4,25,5,10,'#f04452');rect(24,25,5,10,'#f04452');rect(8,33,7,7,'#ffd1a3');rect(18,33,7,7,'#ffd1a3');rect(4,39,12,4,'#6d3d30');rect(17,39,13,4,'#6d3d30');rect(8,24,5,8,'#4da5ff');ctx.restore();}
+function drawFlag(){const x=worldW-110-camera;if(x< -50||x>W+50)return;rect(x,groundY-165,7,165,'#f9f4d5');ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(x+7,groundY-163);ctx.lineTo(x+66,groundY-145);ctx.lineTo(x+7,groundY-124);ctx.fill();for(let i=0;i<3;i++)for(let j=0;j<2;j++)if((i+j)%2===0)rect(x+10+i*17,groundY-157+j*14,17,14,'#29334c');}
+function drawCastle(){const x=worldW-45-camera;if(x< -140||x>W+100)return;rect(x-66,groundY-104,112,104,'#f4c66f');rect(x-78,groundY-121,34,121,'#f4c66f');rect(x+10,groundY-121,34,121,'#f4c66f');rect(x-82,groundY-132,42,16,'#f6db91');rect(x+6,groundY-132,42,16,'#f6db91');rect(x-19,groundY-50,26,50,'#a95a43');rect(x-19,groundY-50,26,5,'#773b3b');rect(x-63,groundY-91,12,18,'#75d7ff');rect(x+12,groundY-91,12,18,'#75d7ff');}
+function render(){background();drawGround();coinItems.forEach(drawCoin);enemies.forEach(drawEnemy);drawFlag();drawCastle();particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/36);rect(p.x-camera,p.y,p.size,p.size,p.color);ctx.globalAlpha=1});drawPlayer();if(shake>0){shake--;}}
+function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
+function hurt(){if(player.inv>0||over||won)return;lives--;player.inv=105;player.vy=-7;player.vx=player.x<worldW/2?-5:5;shake=8;beep(180,.2,'sawtooth');burst(player.x+15,player.y+20,'#ff6574',12);hud();if(lives<=0){finish(false)}}
+function update(dt){elapsed+=dt;const speed=3.5,gravity=.52,frameScale=Math.min(dt/16.67,2);
+player.frame+=frameScale;
+if(keys.left){player.vx=-speed;player.face=-1}else if(keys.right){player.vx=speed;player.face=1}else player.vx*=Math.pow(.78,frameScale);
+player.vx=Math.max(-speed,Math.min(speed,player.vx));player.x+=player.vx*frameScale;player.x=Math.max(0,Math.min(worldW-player.w,player.x));
+if(keys.jump&&player.grounded){player.vy=-11.4;player.grounded=false;beep(420,.07,'triangle');}
+player.vy=Math.min(12,player.vy+gravity*frameScale);const oldY=player.y;player.y+=player.vy*frameScale;player.grounded=false;
+for(const p of platforms){if(p.type==='ground'||p.type==='brick'){if(player.x+player.w>p.x&&player.x<p.x+p.w&&oldY+player.h<=p.y+4&&player.y+player.h>=p.y&&player.vy>=0){player.y=p.y-player.h;player.vy=0;player.grounded=true;}}}
+for(const c of coinItems){if(!c.got&&Math.abs((player.x+player.w/2)-c.x)<19&&Math.abs((player.y+player.h/2)-c.y)<24){c.got=true;coins++;score+=100;beep(880,.07,'sine');burst(c.x,c.y,'#ffdf4f',5);hud();}}
+for(const e of enemies){if(!e.alive)continue;e.x+=e.vx*frameScale;if(Math.abs(e.x-e.home)>70)e.vx*=-1;
+if(overlap(player,e)){if(player.vy>1&&oldY+player.h<e.y+12){e.alive=false;player.vy=-7;score+=250;beep(240,.1);burst(e.x+15,e.y+10,'#b96a45',10);hud();}else hurt();}}
+if(player.y>H+100){hurt();if(lives>0){player.x=Math.max(30,player.x-100);player.y=260;player.vy=0;}}
+if(player.inv>0)player.inv-=frameScale;
+camera=Math.max(0,Math.min(worldW-W,player.x-W*.35));
+particles=particles.filter(p=>p.life>0);particles.forEach(p=>{p.x+=p.vx*frameScale;p.y+=p.vy*frameScale;p.vy+=.16*frameScale;p.life-=frameScale;});
+if(player.x>worldW-150){won=true;score+=1000;hud();finish(true);}
+}
+function finish(success){over=true;won=success;paused=false;keys.left=keys.right=keys.jump=false;$('overlay').style.display='grid';$('overlayTitle').textContent=success?'Kingdom saved!':'Game over';$('overlayText').textContent=success?'You reached the castle! Coins collected: '+coins+'. Final score: '+score+'. Ready for another run?':'The Goombas got this round. Your score: '+score+'. Take a breath and try again.';$('startBtn').textContent=success?'Play again ↻':'Try again ↻';$('pauseBtn').textContent='Ⅱ Pause';beep(success?980:130,.22,success?'sine':'sawtooth');}
+function loop(t){if(!started)return;const dt=last?Math.min(34,t-last):16.67;last=t;if(!paused&&!over)update(dt);render();raf=requestAnimationFrame(loop);}
+function start(){if(started&&raf)cancelAnimationFrame(raf);resetGame();started=true;paused=false;over=false;$('overlay').style.display='none';$('pauseBtn').textContent='Ⅱ Pause';last=0;canvas.focus({preventScroll:true});beep(620,.08,'triangle');raf=requestAnimationFrame(loop);}
+function togglePause(){if(!started||over)return;paused=!paused;$('pauseBtn').textContent=paused?'▶ Resume':'Ⅱ Pause';if(paused){$('overlay').style.display='grid';$('overlayTitle').textContent='Pause break';$('overlayText').textContent='Your kingdom will wait. Ready to keep going?';$('startBtn').textContent='Resume adventure →'}else{$('overlay').style.display='none';last=0;}}
+const keyMap={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'jump',KeyW:'jump',Space:'jump'};
+window.addEventListener('keydown',e=>{if(keyMap[e.code]){e.preventDefault();keys[keyMap[e.code]]=true;if(!started)start();}if(e.code==='KeyP')togglePause();if(e.code==='KeyM')toggleSound();if(e.code==='Enter'&&(!started||over))start();});
+window.addEventListener('keyup',e=>{if(keyMap[e.code]){keys[keyMap[e.code]]=false;}});
+window.addEventListener('blur',()=>{keys.left=keys.right=keys.jump=false;if(started&&!over&&!paused)togglePause();});
+document.querySelectorAll('[data-hold]').forEach(btn=>{const k=btn.dataset.hold;const down=e=>{e.preventDefault();keys[k]=true;if(!started)start();};const up=e=>{e.preventDefault();keys[k]=false;};btn.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,up));});
+$('startBtn').addEventListener('click',()=>{if(paused&&!over){togglePause();return;}start();});
+$('pauseBtn').addEventListener('click',togglePause);
+function toggleSound(){sound=!sound;$('soundBtn').textContent=sound?'♫ Sound on':'♫ Sound off';if(sound)beep(740,.06,'sine');}
+$('soundBtn').addEventListener('click',toggleSound);
+resetWorld();hud();render();
+})();
+</script>
+</body>
+</html>
