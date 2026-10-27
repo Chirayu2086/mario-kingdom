@@ -1,18 +1,43 @@
-# Mario Kingdom
+# 🍄 Mario Kingdom
 
-A browser-based, Mario-inspired platform adventure. Built with vanilla HTML, CSS, and JavaScript; no external runtime dependencies.
+A colorful, browser-based pixel platform adventure built with **vanilla HTML, CSS, and JavaScript**. No bundler, external libraries, or runtime dependencies.
 
-## Run locally
+## Play
 
-Open `index.html` in a modern browser, or run `python -m http.server 8000` and visit `http://localhost:8000`.
+Open **[index.html](./index.html)** in a modern browser, or run a local server:
+
+```bash
+python -m http.server 8000
+```
+
+Then visit `http://localhost:8000`.
 
 ## Controls
 
-- Move: A/D or ←/→
-- Jump: W, ↑, or Space
-- Pause: P
-- Mute: M
+| Action | Keyboard | Touch |
+|---|---|---|
+| Move | A / D or ← / → | On-screen arrows |
+| Jump | Space, W, or ↑ | Jump button |
+| Pause / resume | P | Pause button |
+| Toggle sound | M | Sound button |
 
-## Status
+## Features
 
-Initial scaffold. Gameplay implementation is being developed on a feature branch.
+- Side-scrolling platform game with parallax scenery, platforms, pipes, and a castle finish.
+- Coins, score, lives, patrolling enemies, stomp interactions, and particle effects.
+- Keyboard and mobile touch controls.
+- Sound effects with a mute toggle, pause/resume, restart, and win/lose states.
+- Responsive layout and reduced-motion-aware interface styling.
+
+## Project structure
+
+- `index.html` — complete game and interface.
+- `.github/workflows/pages.yml` — GitHub Pages deployment workflow.
+
+## Deploy with GitHub Pages
+
+1. Open **Settings → Pages** in the repository.
+2. Set the build and deployment source to **GitHub Actions**.
+3. Push to `main); the included workflow publishes the static site.
+
+The game is an original fan-made platformer inspired by classic side-scrolling games. It is not affiliated with or endorsed by Nintendo. Names, characters, and trademarks belong to their respective owners.
